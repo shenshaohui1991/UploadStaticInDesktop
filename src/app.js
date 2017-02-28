@@ -4,10 +4,21 @@
 const {app, BrowserWindow} = require('electron');
 const path = require('path');
 const url = require('url');
+const elemon = require('elemon');
 
 let win;
 
-app.on('ready', createWindow);
+app.on('ready', () => {
+    createWindow();
+
+    elemon({
+        app: app,
+        mainFile: 'app.js',
+        bws: [
+            {bw: win, res: ['renderer.html', 'renderer.js', 'renderer.css']}
+        ]
+    })
+});
 
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
