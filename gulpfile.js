@@ -23,11 +23,16 @@ gulp.task('js', () => {
         .pipe(gulp.dest('./app/js/'));
 });
 
+gulp.task('js_main', () => {
+    return gulp.src('./src/app.js')
+        .pipe(gulp.dest('./app/'));
+});
+
 gulp.task('css', () => {
-    return gulp.src('./stylus/renderer.styl')
+    return gulp.src('./src/stylus/*.styl')
         .pipe(stylus())
         .pipe(cleancss())
         .pipe(gulp.dest('./app/css/'));
 });
 
-gulp.task('build', ['html', 'css', 'js']);
+gulp.task('build', ['html', 'css', 'js', 'js_main']);
