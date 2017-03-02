@@ -1,12 +1,12 @@
 /**
  * Created by Tea on 2017/2/5.
  */
-const {app, BrowserWindow} = require('electron');
+const {app, BrowserWindow, Tray} = require('electron');
 const path = require('path');
 const url = require('url');
 const elemon = require('elemon');
 
-let win;
+let win, appIcon;
 
 app.on('ready', () => {
     createWindow();
@@ -34,20 +34,29 @@ app.on('activate', () => {
 });
 
 function createWindow() {
+    appIcon = new Tray(path.join(__dirname, '/img/jingyu.png'));
+
     win = new BrowserWindow({
         width: 800,
-        height: 600
+        height: 650,
+        resizable: false,
+        icon: path.join(__dirname, '/img/jingyu.png')
     });
 
     win.loadURL(url.format({
         pathname: path.join(__dirname, '/html/renderer.html'),
         protocol: 'file:',
-        slashes: true
+        resizable: true
     }));
 
-    win.webContents.openDevTools();
+    win.on('new-window', (event) => {
+        // 阻止打开新窗口
+        event.preventDefault();
+    });
 
     win.on('closed', () => {
+        // 清除资源
+        appIcon.destroy();
         win = null;
     });
 }

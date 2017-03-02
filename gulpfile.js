@@ -35,4 +35,14 @@ gulp.task('css', () => {
         .pipe(gulp.dest('./app/css/'));
 });
 
-gulp.task('build', ['html', 'css', 'js', 'js_main']);
+gulp.task('img', function () {
+    return gulp.src('./src/img/*.png')
+        .pipe(imagemin({
+            progressive: true,
+            svgoPlugins: [{removeViewBox: false}],
+            use: [pngquant()]
+        }))
+        .pipe(gulp.dest('./app/img/'));
+});
+
+gulp.task('build', ['html', 'css', 'js', 'js_main', 'img']);
