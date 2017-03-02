@@ -3,6 +3,7 @@
  */
 "use strict";
 
+const {clipboard} = require('electron');
 const AppConfig = require('../js/config.js');
 const $dragArea = $('.drag-area');
 const $filesTable = $('table.files');
@@ -51,7 +52,12 @@ $dragArea.on('drop', (event) => {
 });
 
 function upload(file) {
-    let $tr = $(`<tr class="loading"><td class="file-status"><em></em></td><td class="file-name">${file.name}</td><td class="file-type">${file.type}</td><td class="file-size">${file.size}</td><td class="file-link"></td><td class="file-operator"><button class="btn btn-mini btn-default"><span class="icon icon-link"></span></button></td></tr>`);
+    let $tr = $(`<tr class="loading"><td class="file-status"><em></em></td><td class="file-name">${file.name}</td><td class="file-type">${file.type}</td><td class="file-size">${file.size}</td><td class="file-link"></td><td class="file-operator"><button class="btn btn-mini btn-default btn-copy"><span class="icon icon-link"></span></button></td></tr>`);
+
+    $tr.find('.btn-copy').on('click', function () {
+        clipboard.writeText($tr.find('.file-link').text());
+    });
+
     $filesTable.find('tbody').append($tr);
     
     let formData = new FormData();
