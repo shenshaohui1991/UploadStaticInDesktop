@@ -45,4 +45,4 @@ gulp.task('img', function () {
         .pipe(gulp.dest('./app/img/'));
 });
 
-gulp.task('build', ['html', 'css', 'js', 'js_main', 'img']);
+gulp.task('build', ['html', 'css', 'js', 'js_main'/*, 'img'*/]);
