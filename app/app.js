@@ -15,7 +15,7 @@ app.on('ready', () => {
         app: app,
         mainFile: 'app.js',
         bws: [
-            {bw: win, res: ['renderer.html', 'renderer.js', 'renderer.css']}
+            {bw: win, res: ['renderer.html', 'renderer.js', 'config.js', 'utils.js', 'renderer.css']}
         ]
     })
 });
@@ -37,7 +37,7 @@ function createWindow() {
     appIcon = new Tray(path.join(__dirname, '/img/jingyu.png'));
 
     win = new BrowserWindow({
-        width: 800,
+        width: 850,
         height: 650,
         resizable: false,
         icon: path.join(__dirname, '/img/jingyu.png')

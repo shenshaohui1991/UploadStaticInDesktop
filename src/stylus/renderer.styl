@@ -80,19 +80,19 @@ body {
     }
 
     .file-name {
-        width: 156px;
+        width: 140px;
     }
 
     .file-type {
-        width: 96px;
+        width: 50px;
     }
 
     .file-size {
-        width: 76px;
+        width: 68px;
     }
 
     .file-operator {
-        width: 42px;
+        width: 95px;
     }
 
     .fail,
@@ -125,12 +125,17 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    height: 40px;
-}
+    height: 30px;
 
-.radio, .checkbox {
-    float: left;
-    margin: 10px 20px;
+    .btn {
+        margin: 4px 10px;
+    }
+
+    .radio,
+    .checkbox {
+        float: right;
+        margin: 5px 20px;
+    }
 }
 
 @-webkit-keyframes rotate {
@@ -143,4 +148,9 @@ body {
         transform: rotate(360deg);
         -webkit-transform: rotate(360deg);
     }
+}
+
+button[disabled] {
+    background: #eee;
+    color: #999;
 }
