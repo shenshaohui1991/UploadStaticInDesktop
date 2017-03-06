@@ -3,12 +3,13 @@
  */
 "use strict";
 
-const {shell, clipboard} = require('electron');
+const {shell, clipboard, ipcRenderer} = require('electron');
 const AppConfig = require('../js/config.js');
 const utils = require('../js/utils.js');
 
 const $dragArea = $('.drag-area');
 const $filesTable = $('table.files');
+const $uploadBtn = $('.upload-file-btn input[type="file"]');
 
 const KEEP_FILE_NAME = 0;
 const HASH_FILE_NAME = 2;
@@ -29,6 +30,12 @@ $dragArea.on('drop', (event) => {
 
     // 采用jquery时，则使用 event.originalEvent.dataTransfer
     const files = Array.prototype.slice.call(event.originalEvent.dataTransfer.files);
+
+    uploadFiles(files);
+});
+
+$uploadBtn.change((event) => {
+    const files = Array.prototype.slice.call(event.currentTarget.files);
 
     uploadFiles(files);
 });
@@ -98,6 +105,11 @@ function upload(file) {
         }
     });
 }
+
+// 打开上传文件的窗口
+ipcRenderer.on('open-upload-file-dialog', () => {
+    alert('1');
+});
 
 // 保留文件名
 $('.js-keepName input').on('click', function () {
