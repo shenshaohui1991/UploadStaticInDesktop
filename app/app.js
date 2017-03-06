@@ -1,40 +1,51 @@
 /**
  * Created by Tea on 2017/2/5.
  */
-const {app, dialog, BrowserWindow, Tray, Menu} = require('electron');
+const {app, dialog, BrowserWindow, Tray, Menu, MenuItem} = require('electron');
 const path = require('path');
 const url = require('url');
 const elemon = require('elemon');
 
-let win, tray, contextMenu;
+let win, tray, contextMenu, appMenu;
 
-app.on('ready', () => {
-    createWindow();
+initApp();
 
-    elemon({
-        app: app,
-        mainFile: 'app.js',
-        bws: [
-            {bw: win, res: ['renderer.html', 'renderer.js', 'config.js', 'utils.js', 'renderer.css']}
-        ]
-    })
-});
-
-app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') {
-        tray.destroy();
-        app.quit();
-    }
-});
-
-// for mac
-app.on('activate', () => {
-    if (win == null) {
+function initApp() {
+    app.on('ready', () => {
+        createTray();
         createWindow();
-    }
-});
+        createMenu();
 
-function createWindow() {
+        // auto reload
+        elemon({
+            app: app,
+            mainFile: 'app.js',
+            bws: [
+                {
+                    bw: win,
+                    res: []
+                }
+            ]
+        });
+    });
+
+    app.on('window-all-closed', () => {
+        if (process.platform !== 'darwin') {
+            tray.destroy();
+            app.quit();
+        }
+    });
+
+    // for mac
+    app.on('activate', () => {
+        if (win == null) {
+            createTray();
+            createWindow();
+        }
+    });
+}
+
+function createTray() {
     tray = new Tray(path.join(__dirname, '/img/jingyu.png'));
     contextMenu = Menu.buildFromTemplate([
         {
@@ -50,7 +61,6 @@ function createWindow() {
             }
         }
     ]);
-
     tray.setToolTip('上传静态资源');
     tray.setContextMenu(contextMenu);
 
@@ -60,7 +70,9 @@ function createWindow() {
             win.center();
         }
     });
+}
 
+function createWindow() {
     win = new BrowserWindow({
         width: 850,
         height: 650,
@@ -72,8 +84,7 @@ function createWindow() {
 
     win.loadURL(url.format({
         pathname: path.join(__dirname, '/html/renderer.html'),
-        protocol: 'file:',
-        resizable: true
+        protocol: 'file:'
     }));
 
     win.on('ready-to-show', () => {
@@ -98,15 +109,25 @@ function createWindow() {
     win.webContents.on('crashed', function () {
         dialog.showMessageBox({
             type: 'info',
-            title: '不好意思程序崩溃啦~',
-            message: '程序崩溃啦！',
+            title: '程序崩溃啦！',
             buttons: ['重启程序', '关闭']
         }, function (index) {
             if (index === 0) {
                 win.reload();
             } else {
                 win.close();
-            } 
+            }
         })
     });
+}
+
+function createMenu() {
+    appMenu = new Menu();
+    appMenu.append(new MenuItem({
+        label: '关于',
+        click() {
+
+        }
+    }));
+    Menu.setApplicationMenu(appMenu);
 }

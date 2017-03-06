@@ -3,7 +3,6 @@
  */
 "use strict";
 
-const fs = require('fs');
 const {shell, clipboard} = require('electron');
 const AppConfig = require('../js/config.js');
 const utils = require('../js/utils.js');
@@ -37,40 +36,11 @@ $dragArea.on('drop', (event) => {
 function uploadFiles(files) {
     files
         .filter((file) => {
-            if (file && file.type && utils.getLegalFileTypeByMime(file)) {
-                return true;
-            } else {
-                // 判断是否为目录，如果是目录则上传目录
-                uploadDir(file);
-                return false;
-            }
+            return file && file.type && utils.getLegalFileTypeByMime(file);
         })
         .map((file) => {
             upload(file);
         });
-}
-
-function uploadDir(file) {
-    fs.stat(file.path, (err, stats) => {
-        if (err) {
-            return;
-        }
-
-       // 判断该文件是否是一个目录
-        if (stats.isDirectory()) {
-            fs.readdir(file.path, (err, filenames) => {
-                filenames.map((filename) => {
-                    fs.readFile(file.path + '\\' + filename, function (err, curFile) {
-                        if (err) {
-                            return;
-                        }
-                        
-                        upload(curFile);
-                    });
-                });
-            });
-        }
-    });
 }
 
 function upload(file) {

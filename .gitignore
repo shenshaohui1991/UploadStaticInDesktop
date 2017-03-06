@@ -11,3 +11,5 @@ gen
 node_modules/
 
 npm-debug*
+
+config.js
