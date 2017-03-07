@@ -5,4 +5,4 @@
 
 1. `gulp build`
 2. `npm run build-win`
-3. 利用`nsis`中`zip2exe`的打包(nsis下载地址)[]
+3. 利用`nsis`中`zip2exe`的打包
