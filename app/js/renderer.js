@@ -3,7 +3,7 @@
  */
 "use strict";
 
-const {shell, clipboard, ipcRenderer} = require('electron');
+const {shell, clipboard} = require('electron');
 const AppConfig = require('../js/config.js');
 const utils = require('../js/utils.js');
 
@@ -14,31 +14,53 @@ const $uploadBtn = $('.upload-file-btn input[type="file"]');
 const KEEP_FILE_NAME = 0;
 const HASH_FILE_NAME = 2;
 
-$dragArea.on('dragenter dragover dragstart drag dragend', (event) => {
-    event.preventDefault();
-    $dragArea.addClass('active');
-});
+bindEvent();
 
-$dragArea.on('dragleave', (event) => {
-    event.preventDefault();
-    $dragArea.removeClass('active');
-});
+function bindEvent() {
+    preventDrag();
+    addUploadEvent();
+}
 
-$dragArea.on('drop', (event) => {
-    event.preventDefault();
-    $dragArea.removeClass('active');
+function addUploadEvent() {
+    $dragArea.on('drop', (event) => {
+        event.preventDefault();
+        $dragArea.removeClass('active');
 
-    // 采用jquery时，则使用 event.originalEvent.dataTransfer
-    const files = Array.prototype.slice.call(event.originalEvent.dataTransfer.files);
+        // 采用jquery时，则使用 event.originalEvent.dataTransfer
+        const files = Array.prototype.slice.call(event.originalEvent.dataTransfer.files);
 
-    uploadFiles(files);
-});
+        uploadFiles(files);
+    });
 
-$uploadBtn.change((event) => {
-    const files = Array.prototype.slice.call(event.currentTarget.files);
+    $uploadBtn.change((event) => {
+        const files = Array.prototype.slice.call(event.currentTarget.files);
 
-    uploadFiles(files);
-});
+        uploadFiles(files);
+    });
+
+    // 保留文件名
+    $('.js-keepName input').on('click', function () {
+        let $input = $(this);
+        $input.attr('checked', !$input.attr('checked'))
+    });
+}
+
+function preventDrag() {
+    $dragArea.on('dragenter dragover dragstart drag dragend', (event) => {
+        event.preventDefault();
+        $dragArea.addClass('active');
+    });
+
+    $dragArea.on('dragleave', (event) => {
+        event.preventDefault();
+        $dragArea.removeClass('active');
+    });
+
+    // 防止拖拽图片至其他位置，导致页面跳转
+    $('body').on('dragenter dragover dragstart drag dragleave dragend drop', (event) => {
+        event.preventDefault();
+    });
+}
 
 function uploadFiles(files) {
     files
@@ -105,19 +127,3 @@ function upload(file) {
         }
     });
 }
-
-// 打开上传文件的窗口
-ipcRenderer.on('open-upload-file-dialog', () => {
-    alert('1');
-});
-
-// 保留文件名
-$('.js-keepName input').on('click', function () {
-    let $input = $(this);
-    $input.attr('checked', !$input.attr('checked')) 
-});
-
-// 防止拖拽图片至其他位置，导致页面跳转
-$('body').on('dragenter dragover dragstart drag dragleave dragend drop', (event) => {
-    event.preventDefault();
-});

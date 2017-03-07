@@ -1,7 +1,7 @@
 /**
  * Created by Tea on 2017/2/5.
  */
-const {app, dialog, BrowserWindow, Tray, Menu, MenuItem, ipcMain} = require('electron');
+const {app, dialog, BrowserWindow, Tray, Menu, MenuItem} = require('electron');
 const path = require('path');
 const url = require('url');
 //const elemon = require('elemon');
@@ -126,13 +126,6 @@ function createWindow() {
 
 function createMenu() {
     appMenu = new Menu();
-    appMenu.append(new MenuItem({
-        label: '上传',
-        click() {
-            // 打开渲染进程中的上传按钮
-            ipcMain.send('open-upload-file-dialog');
-        }
-    }));
     appMenu.append(new MenuItem({
         label: '关于',
         click() {
