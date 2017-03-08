@@ -30,15 +30,20 @@ body {
         border-color: #9a9fad;
     }
 
-    &.active {
-        border-color: #74b51c;
-    }
-
     figure {
         width: 100px;
         height: 100px;
         margin: 30px auto 0;
-        background: url(../img/dragAreaBg.png) no-repeat center/100px;
+        background: url(../img/box-open.png) no-repeat center/100px;
+        transition: all .3s;
+    }
+
+    &.active {
+        border-color: #74b51c;
+
+        figure {
+            background: url(../img/box-close.png) no-repeat center/100px;
+        }
     }
 
     p {
@@ -54,7 +59,8 @@ body {
 }
 
 .files-pane {
-    height: 360px;
+    padding: 0;
+    height: 291px;
 }
 
 .files.table-striped {
