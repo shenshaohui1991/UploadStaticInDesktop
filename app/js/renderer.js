@@ -43,6 +43,10 @@ function addUploadEvent() {
         let $input = $(this);
         $input.attr('checked', !$input.attr('checked'))
     });
+    
+    $('.clear-list-btn').on('click', function () {
+        $filesTable.find('tbody').empty();
+    });
 }
 
 function preventDrag() {
@@ -96,7 +100,7 @@ function upload(file) {
         }
     });
 
-    $filesTable.find('tbody').append($tr);
+    $filesTable.find('tbody').prepend($tr);
     
     let formData = new FormData();
     formData.append("file", file);

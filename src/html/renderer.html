@@ -11,7 +11,7 @@
         <section class="drag-area">
             <figure></figure>
             <p>将文件拖拽到这里</p>
-            <p class="small">目前支持(png、jpg、gif、ico、css、js)</p>
+            <p class="small">目前支持(png、jpg、gif、ico、css、js、swf)</p>
         </section>
 
         <section class="files-pane pane padded-bottom-more">
@@ -31,9 +31,22 @@
 
         <footer class="toolbar toolbar-footer">
             <button class="btn btn-mini btn-default upload-file-btn">上传文件<input type="file"></button>
+            <button class="btn btn-mini btn-default clear-list-btn">清空列表</button>
             <!--
             <button class="btn btn-mini btn-default upload-dir-btn" disabled>上传文件夹</button>
             -->
+
+            <div class="checkbox">
+                <label class="js-https">
+                    <input type="checkbox" disabled>https
+                </label>
+            </div>
+
+            <div class="checkbox">
+                <label class="js-uglify">
+                    <input type="checkbox" disabled>不压缩(JS/CSS)
+                </label>
+            </div>
 
             <div class="checkbox">
                 <label class="js-keepName">

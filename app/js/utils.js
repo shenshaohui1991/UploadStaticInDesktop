@@ -20,7 +20,10 @@ const filesMime = {
     'application/font-woff': 'woff',
     'application/vnd.ms-fontobject': 'eot',
     'application/octet-stream': 'otf',
-    'application/octet-stream': 'ttf'
+    'application/octet-stream': 'ttf',
+    
+    // 其他静态资源
+    'application/x-shockwave-flash': 'swf'
 };
 
 const filesSuffix = {
