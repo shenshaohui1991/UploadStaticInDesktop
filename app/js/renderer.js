@@ -14,12 +14,10 @@ const $uploadBtn = $('.upload-file-btn input[type="file"]');
 const KEEP_FILE_NAME = 0;
 const HASH_FILE_NAME = 2;
 
-bindEvent();
-
-function bindEvent() {
+(function () {
     preventDrag();
     addUploadEvent();
-}
+})();
 
 function addUploadEvent() {
     $dragArea.on('drop', (event) => {
@@ -27,23 +25,19 @@ function addUploadEvent() {
         $dragArea.removeClass('active');
 
         // 采用jquery时，则使用 event.originalEvent.dataTransfer
-        const files = Array.prototype.slice.call(event.originalEvent.dataTransfer.files);
-
-        uploadFiles(files);
+        uploadFiles(Array.from(event.originalEvent.dataTransfer.files));
     });
 
     $uploadBtn.change((event) => {
-        const files = Array.prototype.slice.call(event.currentTarget.files);
-
-        uploadFiles(files);
+        uploadFiles(Array.from(event.currentTarget.files));
     });
 
-    // 保留文件名
-    $('.js-keepName input').on('click', function () {
-        let $input = $(this);
-        $input.attr('checked', !$input.attr('checked'))
+    // 功能菜单
+    $('.js-keepName input, .js-uglify input, .js-https input').on('click', function () {
+        $(this).attr('checked', !$(this).attr('checked'))
     });
-    
+
+    // 清空列表
     $('.clear-list-btn').on('click', function () {
         $filesTable.find('tbody').empty();
     });
@@ -88,13 +82,13 @@ function upload(file) {
                     </td>
                   </tr>`);
 
-    $tr.find('.btn-copy').on('click', () => {
+    $tr.find('.btn-copy').on('click', function () {
         if (!$(this).attr('disabled')) {
             clipboard.writeText($tr.find('.file-link').text());
         }
     });
 
-    $tr.find('.btn-open').on('click', () => {
+    $tr.find('.btn-open').on('click', function () {
         if (!$(this).attr('disabled')) {
             shell.openExternal($tr.find('.file-link').text());
         }
@@ -106,27 +100,32 @@ function upload(file) {
     formData.append("file", file);
     formData.append("nameType", $('.js-keepName input').attr('checked') ? KEEP_FILE_NAME : HASH_FILE_NAME);
 
-    let url = file.isImage ? AppConfig.imgURL : AppConfig.staticURL;
-
+    let needHttps = $('.js-https input').attr('checked');
+    
     $.ajax({
-        url: url,
+        url: file.isImage ? AppConfig.imgURL : AppConfig.staticURL,
         type: 'POST',
         data: formData,
         dataType: 'JSON',
         cache: false,
         contentType: false,
         processData: false,
+        timeout: 7000,
         success: function (json) {
-            if (json.status == 0) {
-                $tr.find('.file-link').html(json.dataJson.url);
+            if (json.status == 0 && json.dataJson) {
+                $tr.find('.file-link').html(needHttps ? json.dataJson.url : json.dataJson.url.replace('https:', 'http:'));
                 $tr.find('.btn-copy').attr('disabled', false);
                 $tr.find('.btn-open').attr('disabled', false);
                 $tr.removeClass('loading').addClass('success');
             } else {
+                let errorMsg = json.dataJson && json.dataJson.msg ? json.dataJson.msg : '未知错误';
+
+                $tr.find('.file-link').html(errorMsg);
                 $tr.removeClass('loading').addClass('fail');
             }
         },
         error: function () {
+            $tr.find('.file-link').html('网络错误');
             $tr.removeClass('loading').addClass('fail');
         }
     });
