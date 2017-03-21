@@ -11,8 +11,14 @@ const $dragArea = $('.drag-area');
 const $filesTable = $('table.files');
 const $uploadBtn = $('.upload-file-btn input[type="file"]');
 
-const KEEP_FILE_NAME = 0;
+const KEEP_FILE_NAME = 1;
 const HASH_FILE_NAME = 2;
+
+const URL_HTTPS = 1;
+const URL_HTTP = 0;
+
+const FILE_COMPRESS = 1;
+const FILE_UNCOMPRESS = 2;
 
 (function () {
     preventDrag();
@@ -63,24 +69,40 @@ function preventDrag() {
 function uploadFiles(files) {
     files
         .filter((file) => {
-            return file && file.type && utils.getLegalFileTypeByMime(file);
+            if (file && file.type && utils.getLegalFileType(file)) {
+                return true;
+            } else if (file && file.size > 0) {
+                let $tr = createTrElement(file);
+                
+                $tr.find('.file-link').html('文件类型不支持');
+                $tr.removeClass('loading').addClass('fail');
+                $filesTable.find('tbody').prepend($tr);
+                
+                return false;
+            } else {
+                return false;
+            }
         })
         .map((file) => {
             upload(file);
         });
 }
 
+function createTrElement(file) {
+    return $(`<tr class="loading">
+                <td class="file-status"><em></em></td>
+                <td class="file-name">${file.name}</td>
+                <td class="file-size">${utils.getFileSize(file.size)}</td>
+                <td class="file-link"></td>
+                <td class="file-operator">
+                    <button class="btn btn-mini btn-default btn-copy" disabled>复制</button>
+                    <button class="btn btn-mini btn-default btn-open" disabled>打开</button>
+                </td>
+              </tr>`);
+}
+
 function upload(file) {
-    let $tr = $(`<tr class="loading">
-                    <td class="file-status"><em></em></td>
-                    <td class="file-name">${file.name}</td>
-                    <td class="file-size">${utils.getFileSizeInHumanReadable(file.size)}</td>
-                    <td class="file-link"></td>
-                    <td class="file-operator">
-                        <button class="btn btn-mini btn-default btn-copy" disabled>复制</button>
-                        <button class="btn btn-mini btn-default btn-open" disabled>打开</button>
-                    </td>
-                  </tr>`);
+    let $tr = createTrElement(file);
 
     $tr.find('.btn-copy').on('click', function () {
         if (!$(this).attr('disabled')) {
@@ -98,12 +120,18 @@ function upload(file) {
     
     let formData = new FormData();
     formData.append("file", file);
-    formData.append("nameType", $('.js-keepName input').attr('checked') ? KEEP_FILE_NAME : HASH_FILE_NAME);
 
-    let needHttps = $('.js-https input').attr('checked');
+    let url, querys = [],
+        needHttps = $('.js-https input').attr('checked') ? URL_HTTPS : URL_HTTP;
+    
+    querys.push('nameType=' + ($('.js-keepName input').attr('checked') ? HASH_FILE_NAME : KEEP_FILE_NAME));
+    querys.push('compress=' + ($('.js-uglify input').attr('checked') ? FILE_UNCOMPRESS : FILE_COMPRESS));
+    querys.push('https=' + needHttps);
+    
+    url = (file.isImage ? AppConfig.imgURL : AppConfig.staticURL) + '?' + querys.join('&');
     
     $.ajax({
-        url: file.isImage ? AppConfig.imgURL : AppConfig.staticURL,
+        url: url,
         type: 'POST',
         data: formData,
         dataType: 'JSON',
@@ -113,12 +141,12 @@ function upload(file) {
         timeout: 7000,
         success: function (json) {
             if (json.status == 0 && json.dataJson) {
-                $tr.find('.file-link').html(needHttps ? json.dataJson.url : json.dataJson.url.replace('https:', 'http:'));
+                $tr.find('.file-link').html(needHttps == URL_HTTPS ? json.dataJson.url: json.dataJson.url.replace('https:', 'http:'));
                 $tr.find('.btn-copy').attr('disabled', false);
                 $tr.find('.btn-open').attr('disabled', false);
                 $tr.removeClass('loading').addClass('success');
             } else {
-                let errorMsg = json.dataJson && json.dataJson.msg ? json.dataJson.msg : '未知错误';
+                let errorMsg = json.dataJson.msg || '未知错误';
 
                 $tr.find('.file-link').html(errorMsg);
                 $tr.removeClass('loading').addClass('fail');

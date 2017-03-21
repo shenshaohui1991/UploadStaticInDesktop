@@ -33,7 +33,7 @@ const filesSuffix = {
 };
 
 module.exports = {
-    getLegalFileTypeByMime(file) {
+    getLegalFileType(file) {
         let fileType = file.type,
             fileName = file.name;
 
@@ -49,7 +49,7 @@ module.exports = {
         }
     },
 
-    getFileSizeInHumanReadable(fileSize) {
+    getFileSize(fileSize) {
         let size = fileSize || 0,
             units = ['B', 'K', 'MB', 'GB'],
             result;
