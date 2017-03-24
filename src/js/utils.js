@@ -29,21 +29,22 @@ const filesMime = {
 const filesSuffix = {
     // 字体
     'ttf': 'ttf',
-    'eot': 'eot'
+    'eot': 'eot',
+    'apk': 'apk'
 };
 
 module.exports = {
     getLegalFileType(file) {
         let fileType = file.type,
             fileName = file.name;
-
+        
         if (fileType && filesMime.hasOwnProperty(fileType)) {
             // 根据文件类型判断
             file.isImage = fileType.indexOf('image') > -1;
             return file.simpleType = filesMime[fileType];
-        } else if (fileName && filesSuffix.hasOwnProperty(fileName.substr(fileName.indexOf('.') + 1))) {
+        } else if (fileName && filesSuffix.hasOwnProperty(fileName.substring(fileName.lastIndexOf('.') + 1))) {
             // 根据文件后缀判断
-            return filesSuffix[file.name.substr(file.name.indexOf('.') + 1)];
+            return filesSuffix[fileName.substring(fileName.lastIndexOf('.') + 1)];
         } else {
             return '';
         }

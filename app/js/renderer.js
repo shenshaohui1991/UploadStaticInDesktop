@@ -69,7 +69,7 @@ function preventDrag() {
 function uploadFiles(files) {
     files
         .filter((file) => {
-            if (file && file.type && utils.getLegalFileType(file)) {
+            if (file && utils.getLegalFileType(file)) {
                 return true;
             } else if (file && file.size > 0) {
                 let $tr = createTrElement(file);
@@ -138,7 +138,7 @@ function upload(file) {
         cache: false,
         contentType: false,
         processData: false,
-        timeout: 7000,
+        timeout: 30000,
         success: function (json) {
             if (json.status == 0 && json.dataJson) {
                 $tr.find('.file-link').html(needHttps == URL_HTTPS ? json.dataJson.url: json.dataJson.url.replace('https:', 'http:'));
